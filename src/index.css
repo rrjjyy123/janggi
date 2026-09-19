@@ -1,0 +1,180 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+  --font-serif: 'Gowun Batang', 'Batang', serif;
+  --font-hanja: 'Noto Serif KR', 'Batang', '바탕', serif;
+  --color-ink: #140c08;
+  --color-brass: #d6a85c;
+  --color-brass-hi: #f3d08a;
+  --color-parch: #f5e8d2;
+}
+
+:root {
+  --panel-bg: linear-gradient(160deg, rgba(58, 36, 22, 0.94), rgba(28, 17, 10, 0.94));
+  --panel-border: rgba(214, 168, 92, 0.35);
+  --panel-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 220, 160, 0.15);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #140c08;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-parch);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+button {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+/* 화면 가장자리를 어둡게 */
+.vignette {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+.panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--panel-shadow);
+  backdrop-filter: blur(6px);
+  border-radius: 20px;
+}
+
+.btn {
+  border-radius: 12px;
+  padding: 0.55rem 0.9rem;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--color-parch);
+  background: linear-gradient(180deg, rgba(255, 235, 200, 0.14), rgba(255, 235, 200, 0.05));
+  border: 1px solid rgba(214, 168, 92, 0.3);
+  transition:
+    transform 0.12s,
+    opacity 0.2s,
+    background 0.2s;
+  white-space: nowrap;
+}
+.btn:active {
+  transform: scale(0.96);
+}
+.btn:disabled {
+  opacity: 0.35;
+}
+.btn-primary {
+  color: #2a1606;
+  font-weight: 700;
+  background: linear-gradient(180deg, #f7d994, #d6a85c);
+  border-color: #f3d08a;
+  box-shadow: 0 6px 20px rgba(214, 168, 92, 0.35);
+}
+.btn-danger {
+  background: linear-gradient(180deg, #c8413a, #8a1f1c);
+  border-color: #e0736b;
+}
+
+.seg {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(214, 168, 92, 0.2);
+}
+.seg > button {
+  flex: 1;
+  border-radius: 10px;
+  padding: 0.6rem 0.7rem;
+  font-size: 15px;
+  line-height: 1.25;
+  color: rgba(245, 232, 210, 0.65);
+  transition: background 0.2s;
+}
+.seg > button[data-on='true'] {
+  color: #2a1606;
+  font-weight: 700;
+  background: linear-gradient(180deg, #f7d994, #d6a85c);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.panel-in {
+  animation: panelIn 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+@keyframes bannerIn {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.6);
+  }
+  15% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes turnGlow {
+  0%,
+  100% {
+    box-shadow: var(--panel-shadow), 0 0 0 0 rgba(243, 208, 138, 0.4);
+  }
+  50% {
+    box-shadow: var(--panel-shadow), 0 0 26px 4px rgba(243, 208, 138, 0.35);
+  }
+}
+
+.rule-dot {
+  animation: ruleDot 1.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes ruleDot {
+  50% {
+    transform: scale(1.3);
+  }
+}
+.rule-path {
+  animation: rulePath 1s linear infinite;
+}
+@keyframes rulePath {
+  to {
+    stroke-dashoffset: -18;
+  }
+}

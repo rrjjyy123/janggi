@@ -1,0 +1,10 @@
+{
+  "name": "장기 3D",
+  "short_name": "장기 3D",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#140c08",
+  "theme_color": "#140c08",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
