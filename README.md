@@ -24,6 +24,11 @@ npm run build    # dist/ 에 배포용 빌드
 
 > Windows 에서 프로젝트 폴더 경로에 한글이 있으면 `npm run build` 가 Rollup 네이티브 모듈 오류로 멈출 수 있습니다. 영문 경로에서 빌드하세요. (개발 서버·테스트는 영향 없음)
 
+## 배포
+
+`main` 에 푸시하면 GitHub Actions(`.github/workflows/deploy.yml`)가 테스트 → 빌드 → GitHub Pages 배포를 합니다.
+주소: https://rrjjyy123.github.io/janggi/
+
 ## 구조
 
 | 경로 | 내용 |
