@@ -35,7 +35,7 @@ export type Announcement =
 
 export interface GameResult {
   winner: Side | null; // null = 무승부
-  reason: 'checkmate' | 'resign' | 'draw';
+  reason: 'captured' | 'resign' | 'draw';
 }
 
 interface State {
@@ -157,7 +157,7 @@ export const useGame = create<State>((set, get) => ({
 
   pass: () => {
     const s = get();
-    if (s.result || s.checkedSide === s.turn) return;
+    if (s.result) return;
     const history = [...s.history, { side: s.turn, from: null, to: null, captured: null }];
     const prev = s.history[s.history.length - 1];
     // 두 사람이 연달아 쉬면 더 둘 수 없는 판으로 보고 무승부
@@ -195,9 +195,8 @@ function doMove(from: Pos, to: Pos) {
   if (nowCheck) announcement = { kind: 'check', attacker: mover, key: ++annKey };
   else if (wasChecked) announcement = { kind: 'defended', defender: mover, key: ++annKey };
 
-  let result: GameResult | null = null;
-  if (captured?.type === 'K') result = { winner: mover, reason: 'checkmate' };
-  else if (nowCheck && !hasAnyLegalMove(board, next)) result = { winner: mover, reason: 'checkmate' };
+  // 궁이 실제로 잡혔을 때만 끝난다 (장군을 무시하고 두는 것도 둘 사람의 선택)
+  const result: GameResult | null = captured?.type === 'K' ? { winner: mover, reason: 'captured' } : null;
 
   useGame.setState({
     board,
@@ -213,10 +212,10 @@ function doMove(from: Pos, to: Pos) {
   if (!result) afterTurnChange(next);
 }
 
-/** 둘 수 있는 수가 하나도 없으면(장군 아님) 한 수 쉬어야 한다고 알려준다 */
+/** 둘 수 있는 수가 하나도 없으면 한 수 쉬어야 한다고 알려준다 */
 function afterTurnChange(side: Side) {
   const s = useGame.getState();
-  if (s.checkedSide !== side && !hasAnyLegalMove(s.board, side)) {
+  if (!hasAnyLegalMove(s.board, side)) {
     useGame.setState({ announcement: { kind: 'mustPass', side, key: ++annKey } });
   }
 }

@@ -30,11 +30,12 @@ export function inCheck(b: Board, side: Side): boolean {
   return !!k && isAttacked(b, k, other(side));
 }
 
-/** 두고 나서 자기 궁이 잡히게 되는 수는 뺀, 실제로 둘 수 있는 칸 */
+/**
+ * 둘 수 있는 칸. 말의 움직임 규칙만 본다.
+ * 장군을 못 본 척하거나 스스로 궁이 잡히는 자리로 가는 것도 두는 사람의 몫으로 남겨 둔다.
+ */
 export function legalMoves(b: Board, from: Pos): Pos[] {
-  const piece = at(b, from);
-  if (!piece) return [];
-  return pseudoMoves(b, from).filter((to) => !inCheck(applyMove(b, { from, to }), piece.side));
+  return at(b, from) ? pseudoMoves(b, from) : [];
 }
 
 export function hasAnyLegalMove(b: Board, side: Side): boolean {
@@ -42,8 +43,4 @@ export function hasAnyLegalMove(b: Board, side: Side): boolean {
     if (b[i]?.side === side && legalMoves(b, posOf(i)).length > 0) return true;
   }
   return false;
-}
-
-export function isCheckmate(b: Board, side: Side): boolean {
-  return inCheck(b, side) && !hasAnyLegalMove(b, side);
 }

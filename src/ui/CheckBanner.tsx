@@ -6,7 +6,7 @@ import { TEAM } from '../three/constants';
 function content(a: Announcement): { big: string; small: string; color: string } {
   switch (a.kind) {
     case 'check':
-      return { big: '장군', small: `${TEAM[other(a.attacker)].name}의 궁이 공격받고 있습니다`, color: TEAM[a.attacker].light };
+      return { big: '장군', small: `${TEAM[other(a.attacker)].name}의 궁이 공격받고 있습니다 — 피하지 않으면 잡힙니다`, color: TEAM[a.attacker].light };
     case 'defended':
       return { big: '멍군', small: '장군을 막았습니다', color: TEAM[a.defender].light };
     case 'pass':
@@ -74,8 +74,8 @@ export function ResultOverlay() {
   if (!result) return null;
 
   const reason =
-    result.reason === 'checkmate'
-      ? '외통'
+    result.reason === 'captured'
+      ? '궁 잡힘'
       : result.reason === 'resign' && result.winner
         ? `${TEAM[other(result.winner)].name} 기권`
         : '양쪽 모두 한 수 쉼';

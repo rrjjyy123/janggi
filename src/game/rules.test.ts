@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { emptyBoard, idx } from './board';
 import { pseudoMoves } from './moves';
-import { hasAnyLegalMove, inCheck, isCheckmate, legalMoves } from './rules';
+import { applyMove, hasAnyLegalMove, inCheck, legalMoves } from './rules';
 import { initialBoard } from './setup';
 import type { Board, PieceType, Pos, Side } from './types';
 
@@ -117,33 +117,35 @@ describe('궁성', () => {
   });
 });
 
-describe('장군·외통', () => {
-  it('자기 궁이 잡히는 수는 둘 수 없다', () => {
+describe('장군 판정과 두는 사람의 선택', () => {
+  it('자기 궁이 잡히게 되는 수도 막지 않는다', () => {
     const b = emptyBoard();
     place(b, 'cho', 'K', 4, 0);
     place(b, 'cho', 'A', 4, 1);
     place(b, 'han', 'R', 4, 5);
     place(b, 'han', 'K', 3, 9);
+    // 사가 줄을 벗어나면 차가 궁을 바로 잡을 수 있지만, 그 수도 둘 수 있어야 한다
     const m = legalMoves(b, { x: 4, y: 1 });
-    expect(m.every((p) => p.x === 4)).toBe(true); // 줄을 떠나면 차가 궁을 잡음
+    expect(has(m, 3, 1)).toBe(true);
+    expect(has(m, 5, 1)).toBe(true);
+    expect(inCheck(applyMove(b, { from: { x: 4, y: 1 }, to: { x: 3, y: 1 } }), 'cho')).toBe(true);
   });
-  it('차 두 대 외통', () => {
+  it('장군을 무시하고 다른 말을 움직일 수 있다', () => {
     const b = emptyBoard();
     place(b, 'han', 'K', 4, 9);
     place(b, 'cho', 'K', 4, 0);
     place(b, 'cho', 'R', 0, 9); // 끝줄 장군
-    place(b, 'cho', 'R', 1, 8); // 둘째 줄 막기
+    place(b, 'han', 'P', 8, 6);
     expect(inCheck(b, 'han')).toBe(true);
-    expect(isCheckmate(b, 'han')).toBe(true);
+    expect(has(legalMoves(b, { x: 8, y: 6 }), 8, 5)).toBe(true);
   });
-  it('막을 수 있으면 외통이 아니다', () => {
+  it('피할 곳이 없어도 둘 수 있는 수는 남아 있다', () => {
     const b = emptyBoard();
     place(b, 'han', 'K', 4, 9);
-    place(b, 'han', 'A', 3, 8);
     place(b, 'cho', 'K', 4, 0);
     place(b, 'cho', 'R', 0, 9);
     place(b, 'cho', 'R', 1, 8);
     expect(inCheck(b, 'han')).toBe(true);
-    expect(isCheckmate(b, 'han')).toBe(false); // 사가 3,9 로 막음
+    expect(hasAnyLegalMove(b, 'han')).toBe(true); // 궁이 움직일 자리는 있다 (잡히더라도)
   });
 });

@@ -45,7 +45,7 @@ export function PlayerPanel({ side, bottom, onMenu }: { side: Side; bottom: bool
         ? { text: '패배', color: 'rgba(245,232,210,.55)' }
         : { text: '무승부', color: '#f5e8d2' }
     : checked && myTurn
-      ? { text: '장군 — 궁을 지키세요', color: '#ff8a7a' }
+      ? { text: '장군을 받았습니다', color: '#ff8a7a' }
       : myTurn
         ? { text: '둘 차례', color: '#f3d08a' }
         : { text: '상대 차례', color: 'rgba(245,232,210,.5)' };
@@ -83,7 +83,7 @@ export function PlayerPanel({ side, bottom, onMenu }: { side: Side; bottom: bool
       </div>
 
       <div className={`flex gap-1.5 ${vp.landscape ? 'flex-wrap' : 'shrink-0'}`}>
-        <button className="btn" disabled={!myTurn || checked} onClick={pass}>
+        <button className="btn" disabled={!myTurn} onClick={pass}>
           한 수 쉬기
         </button>
         <button
