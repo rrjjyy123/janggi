@@ -20,7 +20,7 @@ function useSounds() {
         else if (last.from) sfx.move();
       }
       if (s.announcement && s.announcement !== p.announcement) {
-        if (s.announcement.kind === 'check') sfx.check();
+        if (s.announcement.kind === 'check' || s.announcement.kind === 'stillChecked') sfx.check();
         else if (s.announcement.kind === 'defended') sfx.defend();
       }
       if (s.result && !p.result) sfx.win();

@@ -20,7 +20,7 @@ function snapshot(s: GameState): SceneSnapshot {
     selected: s.selected,
     targets: s.targets,
     lastMove,
-    checkedSide: s.checkedSide,
+    checked: s.checked,
     pieceStyle: s.pieceStyle,
     viewMode: s.viewMode,
     quality: s.quality,

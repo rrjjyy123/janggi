@@ -9,6 +9,8 @@ function content(a: Announcement): { big: string; small: string; color: string }
       return { big: '장군', small: `${TEAM[other(a.attacker)].name}의 궁이 공격받고 있습니다 — 피하지 않으면 잡힙니다`, color: TEAM[a.attacker].light };
     case 'defended':
       return { big: '멍군', small: '장군을 막았습니다', color: TEAM[a.defender].light };
+    case 'stillChecked':
+      return { big: '궁이 아직 위험합니다', small: `${TEAM[a.side].name}의 궁이 다음 수에 잡힐 수 있습니다`, color: TEAM[a.side].light };
     case 'pass':
       return { big: '한 수 쉼', small: `${a.side === 'cho' ? '초가' : '한이'} 차례를 넘겼습니다`, color: '#f3d08a' };
     case 'mustPass':
@@ -21,7 +23,7 @@ export function CheckBanner() {
   const ann = useGame((s) => s.announcement);
   const viewMode = useGame((s) => s.viewMode);
   const clear = useGame((s) => s.clearAnnouncement);
-  const dur = ann?.kind === 'mustPass' ? 3.2 : 1.9;
+  const dur = ann && (ann.kind === 'mustPass' || ann.kind === 'stillChecked') ? 3.2 : 1.9;
 
   useEffect(() => {
     if (!ann) return;

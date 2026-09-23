@@ -30,6 +30,7 @@ export interface HistoryEntry {
 export type Announcement =
   | { kind: 'check'; attacker: Side }
   | { kind: 'defended'; defender: Side }
+  | { kind: 'stillChecked'; side: Side }
   | { kind: 'pass'; side: Side }
   | { kind: 'mustPass'; side: Side };
 
@@ -52,7 +53,8 @@ interface State {
   targets: Pos[];
   history: HistoryEntry[];
   captured: Record<Side, Piece[]>; // side 가 잡은 상대 말
-  checkedSide: Side | null;
+  /** 지금 궁이 잡힐 위기인 쪽 (자충수를 둘 수 있으니 양쪽 다 해당될 수 있다) */
+  checked: Record<Side, boolean>;
   announcement: (Announcement & { key: number }) | null;
   result: GameResult | null;
   /** 규칙 카드: 어떤 말의 설명을 누구 쪽으로 보여줄지 */
@@ -90,7 +92,7 @@ export const useGame = create<State>((set, get) => ({
   targets: [],
   history: [],
   captured: { cho: [], han: [] },
-  checkedSide: null,
+  checked: { cho: false, han: false },
   announcement: null,
   result: null,
   ruleCard: null,
@@ -124,7 +126,7 @@ export const useGame = create<State>((set, get) => ({
       targets: [],
       history: [],
       captured: { cho: [], han: [] },
-      checkedSide: null,
+      checked: { cho: false, han: false },
       announcement: null,
       result: null,
       ruleCard: null,
@@ -188,12 +190,15 @@ function doMove(from: Pos, to: Pos) {
   const captured = s.board[idx(to)];
   const board = applyMove(s.board, { from, to });
   const next = other(mover);
-  const wasChecked = s.checkedSide === mover;
-  const nowCheck = inCheck(board, next);
+  // 둔 뒤 양쪽 궁이 각각 위험한지 다시 본다
+  const checked = { cho: inCheck(board, 'cho'), han: inCheck(board, 'han') };
 
   let announcement: State['announcement'] = null;
-  if (nowCheck) announcement = { kind: 'check', attacker: mover, key: ++annKey };
-  else if (wasChecked) announcement = { kind: 'defended', defender: mover, key: ++annKey };
+  if (checked[next]) announcement = { kind: 'check', attacker: mover, key: ++annKey };
+  // 멍군: 장군을 받고 있던 쪽이 이번 수로 실제로 위험에서 벗어났을 때만
+  else if (s.checked[mover] && !checked[mover]) announcement = { kind: 'defended', defender: mover, key: ++annKey };
+  // 장군을 그대로 둔 채 다른 수를 뒀다면 다시 한번 알려 준다
+  else if (checked[mover]) announcement = { kind: 'stillChecked', side: mover, key: ++annKey };
 
   // 궁이 실제로 잡혔을 때만 끝난다 (장군을 무시하고 두는 것도 둘 사람의 선택)
   const result: GameResult | null = captured?.type === 'K' ? { winner: mover, reason: 'captured' } : null;
@@ -205,7 +210,7 @@ function doMove(from: Pos, to: Pos) {
     targets: [],
     history: [...s.history, { side: mover, from, to, captured }],
     captured: captured ? { ...s.captured, [mover]: [...s.captured[mover], captured] } : s.captured,
-    checkedSide: nowCheck ? next : null,
+    checked,
     announcement,
     result,
   });

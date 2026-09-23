@@ -12,7 +12,7 @@ export function PlayerPanel({ side, bottom, onMenu }: { side: Side; bottom: bool
   const vp = useViewport();
   const flipped = useFlipped(side);
   const turn = useGame((s) => s.turn);
-  const checked = useGame((s) => s.checkedSide === side);
+  const checked = useGame((s) => s.checked[side]);
   const captured = useGame((s) => s.captured[side]);
   const result = useGame((s) => s.result);
   const pieceStyle = useGame((s) => s.pieceStyle);
@@ -44,8 +44,8 @@ export function PlayerPanel({ side, bottom, onMenu }: { side: Side; bottom: bool
       : result.winner
         ? { text: '패배', color: 'rgba(245,232,210,.55)' }
         : { text: '무승부', color: '#f5e8d2' }
-    : checked && myTurn
-      ? { text: '장군을 받았습니다', color: '#ff8a7a' }
+    : checked
+      ? { text: myTurn ? '장군을 받았습니다' : '궁이 위험합니다', color: '#ff8a7a' }
       : myTurn
         ? { text: '둘 차례', color: '#f3d08a' }
         : { text: '상대 차례', color: 'rgba(245,232,210,.5)' };

@@ -9,7 +9,7 @@ export interface MarkerInput {
   targets: Pos[];
   captureTargets: Pos[];
   lastMove: { from: Pos; to: Pos } | null;
-  checkedKing: Pos | null;
+  checkedKings: Pos[];
 }
 
 interface Marker {
@@ -72,7 +72,7 @@ export class Effects {
       this.addMarker(this.ringTex, '#ffb050', s.lastMove.from, 0.95, 0.28);
       this.addMarker(this.ringTex, '#ffb050', s.lastMove.to, 0.95, 0.35);
     }
-    if (s.checkedKing) this.addMarker(this.ringTex, '#ff2a1a', s.checkedKing, 1.7, 0.95, 0.35, 0.02);
+    for (const k of s.checkedKings) this.addMarker(this.ringTex, '#ff2a1a', k, 1.7, 0.95, 0.35, 0.02);
     if (s.selected && s.selectedSide) {
       const c = new THREE.Color(TEAM[s.selectedSide].light).lerp(new THREE.Color('#ffe2a0'), 0.5);
       this.addMarker(this.ringTex, c, s.selected, 1.45, 0.95, 0.15, 0.016);

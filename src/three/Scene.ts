@@ -17,7 +17,7 @@ export interface SceneSnapshot {
   selected: Pos | null;
   targets: Pos[];
   lastMove: { from: Pos; to: Pos } | null;
-  checkedSide: Side | null;
+  checked: Record<Side, boolean>;
   pieceStyle: PieceStyle;
   viewMode: ViewMode;
   quality: Quality;
@@ -171,22 +171,23 @@ export class JanggiScene {
 
     if (s.shake && s.shake !== prev?.shake) this.shakePiece(s.shake.id);
     if (!prev || prev.viewMode !== s.viewMode) this.fit();
-    if (prev && s.checkedSide && s.checkedSide !== prev.checkedSide) this.shakeAmp = Math.max(this.shakeAmp, 0.12);
+    const newlyChecked = (['cho', 'han'] as Side[]).some((side) => s.checked[side] && !prev?.checked[side]);
+    if (prev && newlyChecked) this.shakeAmp = Math.max(this.shakeAmp, 0.12);
     if (s.result && !prev?.result) this.celebrate(s.result);
     if (!s.result && prev?.result) this.effects.clearConfetti();
 
-    let checkedKing: Pos | null = null;
-    if (s.checkedSide) {
-      const i = s.board.findIndex((p) => p?.type === 'K' && p.side === s.checkedSide);
-      if (i >= 0) checkedKing = posOf(i);
-    }
+    // 위험한 궁은 양쪽 다 표시할 수 있다
+    const checkedKings: Pos[] = [];
+    s.board.forEach((p, i) => {
+      if (p?.type === 'K' && s.checked[p.side]) checkedKings.push(posOf(i));
+    });
     this.effects.setMarkers({
       selected: s.selected,
       selectedSide: s.selected ? (at(s.board, s.selected)?.side ?? null) : null,
       targets: s.targets,
       captureTargets: s.targets.filter((t) => at(s.board, t)),
       lastMove: s.lastMove,
-      checkedKing,
+      checkedKings,
     });
   }
 
